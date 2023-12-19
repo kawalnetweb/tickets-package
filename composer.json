@@ -1,0 +1,23 @@
+{
+    "name": "netweb/tickets",
+    "description": "This package will genrate tickets for handle project issues easily",
+    "type": "library",
+    "license": "MIT",
+    "minimum-stability": "dev",
+    "require": {
+        "laravelcollective/html" : "6.4.1*",
+        "guzzlehttp/guzzle" : "7.8.1*",
+        "league/flysystem-sftp" : "3.0.0*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Netweb\\Tickets\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Mahildeep",
+            "email": "mahildeep.netweb@gmail.com"
+        }
+    ]
+}
