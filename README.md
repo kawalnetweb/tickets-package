@@ -14,9 +14,15 @@ php artisan vendor:publish --tag=ticket-config
 ## Config ENV
 
 CLIENT_TOKEN = 'Your client code in tickets project'
+
 PROJECT_CODE = 'Your Project code in tickets project'
 
+### For Upload Files
+
 TICKET_SFTP_HOST
+
 TICKET_SFTP_USERNAME
+
 TICKET_SFTP_PASSWORD
+
 TICKET_SFTP_ROOT = 'path to where tickets attachments need to upload'
