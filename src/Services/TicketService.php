@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Storage;
 
 class TicketService
 {
-    public $client_code;
+    public $client_token;
     public $project_code;
     public $labels;
     public $priorities;
@@ -15,7 +15,7 @@ class TicketService
     public $users;
     public $clients;
     public function __construct(){
-        $this->client_code = config('tickets.client_code');
+        $this->client_token = config('tickets.client_token');
         $this->project_code = config('tickets.project_code');
         $res = Http::get(config('tickets.api_url').'/get-all-statuses');
         if($res->successful()){
@@ -34,18 +34,16 @@ class TicketService
     }
 
     public function ticketGenerate($request){
-        if(!isset($request->title) || !isset($request->description) || $request->title == null || $request->description == null){
-            return ['status' => false,'message' => 'Please Fill all Fields'];
+        if(!isset($request->title) || !isset($request->description) || $request->title == null || $request->description == null || $request->label_id == null || $request->priority_id == null){
+            return ['status' => false,'message' => 'Please fill all required fields'];
         }
         $data = $request->only('title','description','label_id','priority_id');
-        $data['client_code'] = $this->client_code;
+        $data['client_code'] = $this->client_token;
         $data['project_code'] = $this->project_code;
-        $files = $request->file('files');
-        $fileRes = $this->fileUpload($files);
-        if($fileRes['status'] == false){
-            return $fileRes;
+        $fileRes = [];
+        if($request->has('files')){
+            $fileRes = $this->fileUpload($request->file('files'));
         }
-
         $data['files'] = $fileRes['file_names'] ?? [];
         $response =  Http::post(config('tickets.api_url').'/addTicket',$data);
         if($response->successful()){
@@ -63,7 +61,7 @@ class TicketService
         $labels = $this->labels;
         $priorities = $this->priorities;
         $stages = $this->stages;
-        $res = Http::get(config('tickets.api_url').'/all-tickets',['client_code' => $this->client_code,'project_code' => $this->project_code]);
+        $res = Http::get(config('tickets.api_url').'/all-tickets',['client_code' => $this->client_token,'project_code' => $this->project_code]);
         if($res->successful()){
             $tickets = (isset($res->json()['tickets']))? $res->json()['tickets'] : [];
             return view('tickets::index',compact('tickets','labels','priorities','stages'));
@@ -90,20 +88,23 @@ class TicketService
         return abort(403,'Something Went Wrong');
     }
     public function ticketComment($request){
+        if(str_contains($request->comment,'&nbsp;')){
+            return ['status' => false,'message' => 'Please Add Comment properly','code' => 400];
+        }
         $data = $request->only('ticket_id','comment');
-        $data['client_code'] = $this->client_code;
+        $data['client_code'] = $this->client_token;
         $res = Http::post(config('tickets.api_url').'/ticket-comments', $data);
         if($res->successful()){
             return $res->json();
         }
-        return response(['status' => false,'message' => 'Something Went Wrong'],400);
+        return ['status' => false,'message' => 'Something Went Wrong','code' => 400];
     }
     public function ticketsPagination($request){
         $labels = $this->labels;
         $priorities = $this->priorities;
         $stages = $this->stages;
         $apiUrl = $request->api_url;
-        $res = Http::get($apiUrl.'&client_code='.$this->client_code.'&project_code='.$this->project_code);
+        $res = Http::get($apiUrl.'&client_code='.$this->client_token.'&project_code='.$this->project_code);
         if($res->successful()){
             $tickets = $res->json()['tickets'];
             return view('tickets::pagination',compact('tickets','labels','priorities','stages'));

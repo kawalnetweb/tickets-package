@@ -1,6 +1,6 @@
-@extends(config('tickets.extends-layout'))
+@extends('tickets::layout')
 
-@section(config('tickets.section'))
+@section('content')
 {!! Form::open(['id' => 'ticketForm','files' => true]) !!}
 <div class="row p-3" style="line-height: 30px;">
     <div class="col-md-3"></div>
@@ -8,7 +8,7 @@
         <div class="row">
             <div class="col-md-12">
                 <h4>Generate Ticket
-                    <a href="{{route('tickets.index')}}" class="btn btn-light float-end"> View List</a>
+                    <a href="{{route('tickets.index')}}" class="btn btn-light float-end"> View Tickets</a>
                 </h4>
             </div>
             <div class="col-md-12">
@@ -34,8 +34,8 @@
             </div>
             <div class="col-md-12">
                 <div class="form-group">
-                    <label for="">Files  <span class="text-danger">*</span></label>
-                    {!! Form::file('files[]', ['class' => 'form-control','multiple','required']) !!}
+                    <label for="">Files  </label>
+                    {!! Form::file('files[]', ['class' => 'form-control','multiple']) !!}
                     <div class="invalid-feedback"></div>
                 </div>
             </div>
@@ -46,9 +46,9 @@
                     <div class="invalid-feedback"></div>
                 </div>
             </div>
-            <div class="col-md-12" id="message">
+            <div class="col-md-12 pt-2" id="message">
             </div>
-            <div class="col-md-12 pt-3">
+            <div class="col-md-12 pt-2">
                 <input type="submit" value="Submit" class="btn btn-primary">
             </div>
         </div>
@@ -59,7 +59,7 @@
 {!! Form::close() !!}
 @endsection
 
-@push(config('tickets.scripts'))
+@push('scripts')
     <script>
         $(document).ready(function(){
             $('#ticketForm').submit(function(event){
@@ -67,6 +67,7 @@
                 var form = $(this);
                 var formdata = new FormData(form[0]);
                 var url = `{{route('tickets.store')}}`;
+                loader('show');
                 $.ajax({
                     url: url,
                     enctype: "multipart/form-data",
@@ -81,6 +82,7 @@
                         }else{
                             $('#message').html('<p class="alert alert-danger">'+res.message+'<p>');
                         }
+                        loader('hide');
                         setTimeout(() => {
                             $('#message').html('');
                         }, 5000);

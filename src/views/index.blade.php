@@ -1,6 +1,6 @@
-@extends(config('tickets.extends-layout'))
+@extends('tickets::layout')
 
-@section(config('tickets.section'))
+@section('content')
     <style>
         ul.pagination>li:first-child a, ul.pagination>li:last-child a {
             font-size: 0;
@@ -29,7 +29,7 @@
     </style>
     <div class="heading p-2">
         <h4>
-            Tickets
+            My Tickets
             <a href="{{route('tickets.create')}}" class="btn btn-sm btn-primary float-end"> + Add New</a>
         </h4>
     </div>
@@ -123,11 +123,12 @@
     </div>
 @endsection
 
-@push(config('tickets.scripts'))
+@push('scripts')
 <script>
     $(document).on('click','.page-link',function(){
         var apiUrl = $(this).attr('value');
         if(apiUrl != ''){
+            loader('show');
             $.ajax({
                 url:`{{route('tickets.pagination')}}`,
                 type:'post',
@@ -138,6 +139,7 @@
                     if(res){
                         $('#data').html(res);
                     }
+                    loader('hide');
                 }
             });
         }

@@ -1,12 +1,14 @@
-@extends(config('tickets.extends-layout'))
+@extends('tickets::layout')
 
-@section(config('tickets.section'))
+@section('content')
 <div class="heading">
     <h4>Ticket Details</h4>
 </div>
-<div class="main p-4">
-    <h5>Title : {{$ticket['title']}}</h5>
-    <hr>
+<hr>
+<div class="main">
+    <div class="my-2 py-2 px-2 bg-light">
+        <h5>Title : {{$ticket['title']}}</h5>
+    </div>
     <div class="row">
         <div class="col-md-8">
             <div class="row">
@@ -32,9 +34,9 @@
                     {!! Form::open(['id' => 'comment-form']) !!}
                     <div class="form-group">
                         {!! Form::hidden('ticket_id', $ticket['id']) !!}
-                        {!! Form::textarea('comment', null, ['class' => 'form-control editor','id' => 'ticket-comments','rows' => '5']) !!}
+                        {!! Form::textarea('comment', null, ['class' => 'form-control editor','id' => 'ticket-comments']) !!}
                     </div>
-                    <div id="message"></div>
+                    <div class="mt-2" id="message"></div>
                     <div class="float-end mt-2">
                         <input type="submit" class="btn btn-primary">
                     </div>
@@ -103,7 +105,7 @@
 
 @endsection
 
-@push(config('tickets.scripts'))
+@push('scripts')
 <script src="https://cdn.ckeditor.com/ckeditor5/11.0.1/classic/ckeditor.js"></script>
 <script>
    ClassicEditor.create(document.querySelector('#ticket-comments'));
@@ -115,6 +117,7 @@
             var form = $(this);
             var formdata = new FormData(form[0]);
             var url = `{{route('tickets.comments')}}`;
+            loader('show');
             $.ajax({
                 url: url,
                 enctype: "multipart/form-data",
@@ -133,6 +136,7 @@
                     }else{
                         $('#message').html('<p class="alert alert-danger">'+res.message+'<p>');
                     }
+                    loader('hide');
                     setTimeout(() => {
                         $('#message').html('');
                     }, 2000);

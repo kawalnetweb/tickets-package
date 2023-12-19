@@ -16,7 +16,7 @@ Class TicketServiceProvider extends ServiceProvider
         // publishing config
         $this->publishes([
             __DIR__.'/config/tickets.php' => config_path('tickets.php'),
-        ], 'config');
+        ], 'ticket-config');
     }
 
 }
