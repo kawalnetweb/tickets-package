@@ -6,7 +6,7 @@
     "minimum-stability": "dev",
     "require": {
         "laravelcollective/html" : "6.4.*",
-        "guzzlehttp/guzzle" : "7.8.*",
+        "guzzlehttp/guzzle" : "7.8.0",
         "league/flysystem-sftp" : "3.0.*"
     },
     "autoload": {
